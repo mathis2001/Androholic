@@ -6,7 +6,7 @@ For example, login features may unfocus the password field between each try so y
 
 ## Disclaimer
 
-This tool have been designed only for pentesting and private usage!
+This tool have been designed only for pentesting and to test your own apps, DO NOT USE IT ON APPS THAT YOU DOES NOT OWN!
 
 ## Install
 
