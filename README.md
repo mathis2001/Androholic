@@ -39,3 +39,6 @@ options:
 
 https://github.com/user-attachments/assets/46dcfc58-bb91-4ca5-b897-49527897ffed
 
+## To do
+
+- Checks UI dynamiques
