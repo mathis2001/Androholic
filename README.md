@@ -1,7 +1,7 @@
 # Androholic
 [Beta testing] Android bruteforcing tool simulating manual user typing with adb
 
-/!\ This tool is more a tamplate than a complete tool as it depends on the feature you are testing.
+/!\ This tool is more a template than a complete tool as it depends on the feature you are testing.
 For example, login features may unfocus the password field between each try so you will sometimes need to had Tabs keyevents...
 
 ## Disclaimer
