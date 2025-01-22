@@ -21,7 +21,7 @@ $ python3 androholic.py
 ## Usage
 
 ```
-$ python3 androholic.py -w wordlist.txt [-d 3] [--overlay] [--pop-up]
+$ python3 androholic.py -w wordlist.txt [-d 3] [--overlay] [--pop-up] [--semi-automatic KEYWORD] [--tabs-after-input 5]
 ```
 
 ## Options
@@ -35,6 +35,10 @@ options:
                         Optional delay (in seconds) between each input.
   --overwrite           Overwrite previous input between each try.
   --pop-up              clic on 'enter' if there is a pop-up between every try
+  --semi-automated SEMI_AUTOMATED
+                        If the pop-up need multiple 'enter' keypress, give a word from the error message.
+  --tabs-after-input TABS_AFTER_INPUT
+                        If the focus is losed after the text/code is typed, Number of tabs needed to focus on the validation button.
 ```
 
 ## Screenshots and records
@@ -46,7 +50,8 @@ https://github.com/user-attachments/assets/0f407ab3-c622-4503-9b93-7c5f7db1c238
 
 ## To do
 
-- Checks UI dynamiques
+- More Dynamic checks
+- Alternative to the uiautomator dump check (faster alternative)
 
 
 
