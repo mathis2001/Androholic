@@ -10,6 +10,12 @@ This tool have been designed only for pentesting and to test your own apps, DO N
 
 Also, be careful when you use this tool as you risk to lock your device if the tool is running on your device pin / password
 
+## Pre-requisites
+
+- Python3
+- adb
+- Android device with developer mode activated
+
 ## Install
 
 ```
