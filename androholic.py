@@ -4,21 +4,26 @@ import os
 import argparse
 import time
 import sys
+from colorama import Fore, Style, init
 
+KEY_CODES = {
+    "TABULATION": "KEYCODE_TAB",
+    "ENTER": "66",
+    "MOVE_END": "KEYCODE_MOVE_END",
+    "DEL": "KEYCODE_DEL"
+}
 
-class bcolors:
-	FAIL = '\033[91m'
-	RESET = '\033[0m'
-	INFO = '\033[94m'
+init()
 
 parser = argparse.ArgumentParser(description="Send lines from a file as input via ADB.")
 parser.add_argument('-w', '--wordlist', required=True, help="Path to the file containing lines of text.")
 parser.add_argument('-d', '--delay', type=float, help="Optional delay (in seconds) between each input.")
 parser.add_argument('--overwrite', help="Overwrite previous input between each try.", action="store_true")
-parser.add_argument('--pop-up', help="clic on 'enter' if there is a pop-up between every try", action='store_true')
+parser.add_argument('--pop-up', help="Clic on 'Enter' if there is a pop-up between every try", action='store_true')
 parser.add_argument('--semi-automated', help="If the pop-up need multiple 'enter' keypress, give a word from the error message.")
 parser.add_argument('--tabs-after-input', type=int, help="Number of tabs after the input")
 args = parser.parse_args()
+
 
 def banner():
     print('''
@@ -28,74 +33,75 @@ def banner():
 ░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░        
 ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░        
 ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓██████▓▒░   by S1rN3tZ
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓██████▓▒░   
+                                                        by S1rN3tZ
                                                                                                                              
-                                                                                                                             
-
 ''')
 
-def display_typing_animation():
-    for dots in range(1, 4):
-        sys.stdout.write(f"\rTyping{'.' * dots} ")
-        sys.stdout.flush()
-        time.sleep(0.2)
-    sys.stdout.write("\r")
-    sys.stdout.flush()
 
 def is_pop_up_displayed(keyword):
     os.system("adb shell uiautomator dump /sdcard/view.xml")
-    UI_data = os.popen(f"adb shell cat /sdcard/view.xml").read()
-    time.sleep(1)
-    if keyword in UI_data:
-        return True
-    else:
-        return False
+    ui_data = os.popen(f"adb shell cat /sdcard/view.xml").read()
+    os.system("adb shell rm /sdcard/view.xml")
+    return keyword in ui_data
 
-def keycode_tab(number):
-    for _ in range(number):
-        os.system("adb shell input keyevent KEYCODE_TAB")
+
+def input_key(key, times=1):
+    for _ in range(times):
+        os.system(f"adb shell input keyevent {key}")
+
 
 def main():
-    file_path = args.wordlist
-    dots = 0
 
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
+    with open(args.wordlist, 'r') as file:
+        lines = [line.strip() for line in file.readlines()]
+        previous_line = None
 
-    for line in lines:
-        display_typing_animation()
-        newline = line.strip()
-        previous_line = len(newline)
-        os.system(f"adb shell input text \"{newline}\"")
-        if args.tabs_after_input:
-            keycode_tab(args.tab_after_input)
-        os.system("adb shell input keyevent 66")
-
-        if args.delay:
-            time.sleep(args.delay)
-
-        if args.pop_up:
-            for _ in range(args.pop_up):
-                os.system("adb shell input keyevent 66")
-        
-        if args.semi_automated:
-            while is_pop_up_displayed(args.semi_automated):
-                os.system("adb shell input keyevent 66")
-            else:
-                pass  
+        for line in lines:            
+            print(f"{Fore.WHITE}[*] Writing input to device: \"{line}\"{Style.RESET_ALL}")
+            os.system(f"adb shell input text \"{line}\"")
             
+            if args.tabs_after_input:
+                input_key(KEY_CODES['TABULATION'], args.tab_after_input)
+            
+            # Press ENTER to validate form
+            input_key(KEY_CODES['ENTER'])            
 
-        if args.overwrite:
-            os.system("adb shell input keyevent KEYCODE_MOVE_END")
-            for _ in range(previous_line):
-                os.system("adb shell input keyevent KEYCODE_DEL")
+            if args.delay:
+                time.sleep(args.delay)
+
+            # Press ENTER if pop-up appeared
+            if args.pop_up:
+                input_key(KEY_CODES['ENTER']) 
+            
+            if args.semi_automated:
+                count = 0
+                while is_pop_up_displayed(args.semi_automated):
+                    input_key(KEY_CODES['ENTER']) 
+                    count += 1
+
+                    if count == 10:
+                        print(f"{Fore.RED}[!] Pressed ENTER {count} times. Something seems to be wrong.{Style.RESET_ALL}")
+                        break
                 
 
-try:
+            if args.overwrite and previous_line:
+                # Move at the end of the input
+                input_key(KEY_CODES['MOVE_END']) 
+                # Delete previous x caracters 
+                input_key(KEY_CODES['DEL'], len(previous_line))
+               
+            previous_line = line
+                    
+
+if __name__ == "__main__":
+    try:
         banner()
         main()
-        print(bcolors.INFO+"[*] "+bcolors.RESET+"Script finished.")
-except Exception as e:
-        print(e)
-except KeyboardInterrupt:
-        print(bcolors.FAIL+"[!] "+bcolors.RESET+"Script canceled.")
+        print(f"{Fore.BLUE}[>] Script finished...{Style.RESET_ALL}")
+
+    except Exception as e:
+        print(f"{Fore.RED}[!] An error occured...{Style.RESET_ALL}", e)
+
+    except KeyboardInterrupt:
+        print(f"{Fore.YELLOW}[>] Script canceled...{Style.RESET_ALL}")
