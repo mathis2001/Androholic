@@ -1,7 +1,7 @@
 # Androholic
-[Beta testing] Android bruteforcing tool for apps pentesting simulating manual user typing with adb
+**[Beta testing]** Android bruteforcing tool for apps pentesting simulating manual user typing with adb
 
-/!\ This tool is more a template than a complete tool as it depends on the feature you are testing.
+> /!\ This tool is more a template than a complete tool as it depends on the feature you are testing.
 For example, login features may unfocus the password field between each try so you will sometimes need to manually had Tabs or other keyevents in the code...
 
 ## Disclaimer
@@ -21,6 +21,7 @@ Also, be careful when you use this tool as you risk to lock your device if the t
 ```
 $ git clone https://github.com/mathis2001/Androholic
 $ cd Androholic
+$ pip install -r requirements.txt
 $ python3 androholic.py
 ```
 
